@@ -14,6 +14,7 @@ static void tap_handler(AccelAxisType axis, int32_t direction) {
   s_timer = 0;
   timer_running = true;
   vibes_long_pulse();
+  layer_set_hidden(text_layer_get_layer(s_textlayer_rest), false);
 }
 
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
