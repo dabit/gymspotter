@@ -5,6 +5,7 @@ static TextLayer *text_layer;
 static int s_timer = 0;
 static int s_max_timer = 90;
 static bool timer_running = false;
+static GFont s_res_bitham_30_black;
 
 static void tap_handler(AccelAxisType axis, int32_t direction) {
   s_timer = 0;
@@ -33,11 +34,15 @@ static void click_config_provider(void *context) {
 static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
-
-  text_layer = text_layer_create((GRect) { .origin = { 0, 72 }, .size = { bounds.size.w, 20 } });
-  text_layer_set_text(text_layer, "0");
+  
+  s_res_bitham_30_black = fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK);
+  // text_layer
+  text_layer = text_layer_create(GRect(20, 61, 100, 38));
+  text_layer_set_text(text_layer, "00:00");
   text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
-  layer_add_child(window_layer, text_layer_get_layer(text_layer));
+  text_layer_set_font(text_layer, s_res_bitham_30_black);
+    layer_add_child(window_layer, text_layer_get_layer(text_layer));
+  
 }
 
 static void window_unload(Window *window) {
@@ -50,7 +55,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   int seconds = s_timer % 60;
   int minutes = (s_timer % 3600) / 60;
 
-  snprintf(s_timer_buffer, sizeof(s_timer_buffer), "%d:%d", minutes, seconds);
+  snprintf(s_timer_buffer, sizeof(s_timer_buffer), "%02d:%02d", minutes, seconds);
   text_layer_set_text(text_layer, s_timer_buffer);
 
   if(timer_running) {
