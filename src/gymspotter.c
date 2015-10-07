@@ -3,10 +3,12 @@
 static Window *window;
 static TextLayer *text_layer;
 static int s_timer = 0;
-static int s_max_timer = 5;
+static int s_max_timer = 90;
 static bool timer_running = false;
 static GFont s_res_bitham_30_black;
 static const uint32_t const vibe_segments[] = { 1000, 300, 1000};
+static GFont s_res_gothic_18_bold;
+static TextLayer *s_textlayer_rest;
 
 static void tap_handler(AccelAxisType axis, int32_t direction) {
   s_timer = 0;
@@ -17,16 +19,19 @@ static void tap_handler(AccelAxisType axis, int32_t direction) {
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
   s_timer = 0;
   timer_running = true;
+  layer_set_hidden(text_layer_get_layer(s_textlayer_rest), false);
 }
 
 static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
   s_timer = 0;
   timer_running = false;
+  layer_set_hidden(text_layer_get_layer(s_textlayer_rest), true);
 }
 
 static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
   s_timer = 0;
   timer_running = false;
+  layer_set_hidden(text_layer_get_layer(s_textlayer_rest), true);  
 }
 
 static void click_config_provider(void *context) {
@@ -45,8 +50,19 @@ static void window_load(Window *window) {
   text_layer_set_text(text_layer, "00:00");
   text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
   text_layer_set_font(text_layer, s_res_bitham_30_black);
+  
+  s_res_gothic_18_bold = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
+  // s_textlayer_rest
+  s_textlayer_rest = text_layer_create(GRect(34, 20, 75, 24));
+  text_layer_set_background_color(s_textlayer_rest, GColorBlack);
+  text_layer_set_text_color(s_textlayer_rest, GColorWhite);
+  text_layer_set_text(s_textlayer_rest, "REST");
+  text_layer_set_text_alignment(s_textlayer_rest, GTextAlignmentCenter);
+  text_layer_set_font(s_textlayer_rest, s_res_gothic_18_bold);
+  
   layer_add_child(window_layer, text_layer_get_layer(text_layer));
-
+  layer_add_child(window_layer, text_layer_get_layer(s_textlayer_rest));
+  layer_set_hidden(text_layer_get_layer(s_textlayer_rest), true);
 }
 
 static void window_unload(Window *window) {
