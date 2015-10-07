@@ -1,0 +1,19 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "david@crowdint.com",
+    "longName": "GymSpotter",
+    "projectType": "native",
+    "resources": {
+        "media": []
+    },
+    "sdkVersion": "3",
+    "shortName": "GymSpotter",
+    "uuid": "7f271081-bf9e-4f3a-ab5f-ba9533434016",
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    }
+}
