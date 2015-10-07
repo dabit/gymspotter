@@ -3,7 +3,7 @@
     "capabilities": [
         ""
     ],
-    "companyName": "david@crowdint.com",
+    "companyName": "david@michelada.io",
     "longName": "GymSpotter",
     "projectType": "native",
     "resources": {
@@ -11,6 +11,10 @@
     },
     "sdkVersion": "3",
     "shortName": "GymSpotter",
+    "targetPlatforms": [
+        "aplite",
+        "basalt"
+    ],
     "uuid": "7f271081-bf9e-4f3a-ab5f-ba9533434016",
     "versionLabel": "1.0",
     "watchapp": {

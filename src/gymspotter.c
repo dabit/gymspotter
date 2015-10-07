@@ -3,9 +3,11 @@
 static Window *window;
 static TextLayer *text_layer;
 static int s_timer = 0;
+static bool timer_running = false;
 
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
-  text_layer_set_text(text_layer, "Select");
+  s_timer = 0;
+  timer_running = !timer_running;
 }
 
 static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
@@ -45,7 +47,10 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   
   snprintf(s_timer_buffer, sizeof(s_timer_buffer), "%d:%d:%d", hours, minutes, seconds);
   text_layer_set_text(text_layer, s_timer_buffer);
-  s_timer++;
+  
+  if(timer_running) {
+    s_timer++;
+  }
 }
 
 static void init(void) {
