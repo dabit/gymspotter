@@ -6,6 +6,11 @@ static int s_timer = 0;
 static int s_max_timer = 90;
 static bool timer_running = false;
 
+static void tap_handler(AccelAxisType axis, int32_t direction) {
+  s_timer = 0;
+  timer_running = true;
+}
+
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
   s_timer = 0;
   timer_running = true;
@@ -23,6 +28,7 @@ static void click_config_provider(void *context) {
   window_single_click_subscribe(BUTTON_ID_SELECT, select_click_handler);
   window_single_click_subscribe(BUTTON_ID_UP, up_click_handler);
   window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
+  accel_tap_service_subscribe(tap_handler);
 }
 
 static void window_load(Window *window) {
