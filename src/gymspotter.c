@@ -28,7 +28,6 @@ static void click_config_provider(void *context) {
   window_single_click_subscribe(BUTTON_ID_SELECT, select_click_handler);
   window_single_click_subscribe(BUTTON_ID_UP, up_click_handler);
   window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
-  accel_tap_service_subscribe(tap_handler);
 }
 
 static void window_load(Window *window) {
@@ -47,13 +46,13 @@ static void window_unload(Window *window) {
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   static char s_timer_buffer[6];
-  
+
   int seconds = s_timer % 60;
   int minutes = (s_timer % 3600) / 60;
-  
+
   snprintf(s_timer_buffer, sizeof(s_timer_buffer), "%d:%d", minutes, seconds);
   text_layer_set_text(text_layer, s_timer_buffer);
-  
+
   if(timer_running) {
     if(s_timer == s_max_timer){
       timer_running = false;
@@ -69,13 +68,15 @@ static void init(void) {
   window = window_create();
   window_set_click_config_provider(window, click_config_provider);
   window_set_window_handlers(window, (WindowHandlers) {
-	.load = window_load,
+  .load = window_load,
     .unload = window_unload,
   });
   const bool animated = true;
   window_stack_push(window, animated);
-  
+
   tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
+
+  accel_tap_service_subscribe(tap_handler);
 }
 
 static void deinit(void) {
