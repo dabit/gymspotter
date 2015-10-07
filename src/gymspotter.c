@@ -3,11 +3,12 @@
 static Window *window;
 static TextLayer *text_layer;
 static int s_timer = 0;
+static int s_max_timer = 90;
 static bool timer_running = false;
 
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
   s_timer = 0;
-  timer_running = !timer_running;
+  timer_running = true;
 }
 
 static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
@@ -39,17 +40,22 @@ static void window_unload(Window *window) {
 }
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
-  static char s_timer_buffer[9];
+  static char s_timer_buffer[6];
   
   int seconds = s_timer % 60;
   int minutes = (s_timer % 3600) / 60;
-  int hours = s_timer / 3600;
   
-  snprintf(s_timer_buffer, sizeof(s_timer_buffer), "%d:%d:%d", hours, minutes, seconds);
+  snprintf(s_timer_buffer, sizeof(s_timer_buffer), "%d:%d", minutes, seconds);
   text_layer_set_text(text_layer, s_timer_buffer);
   
   if(timer_running) {
-    s_timer++;
+    if(s_timer == s_max_timer){
+      timer_running = false;
+      vibes_long_pulse();
+      vibes_long_pulse();
+    } else {
+      s_timer++;
+    }
   }
 }
 
