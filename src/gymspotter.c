@@ -3,12 +3,14 @@
 static Window *window;
 static TextLayer *text_layer;
 static int s_timer = 0;
-static int s_max_timer = 90;
+static int s_max_timer = 0;
 static bool timer_running = false;
 static GFont s_res_bitham_30_black;
-static const uint32_t const vibe_segments[] = { 1000, 300, 1000};
+static const uint32_t const vibe_segments[] = { 1000, 300, 1000 };
+static const int const max_timer_settings[] = { 45, 60, 75, 90, 105, 120 };
 static GFont s_res_gothic_18_bold;
 static TextLayer *s_textlayer_rest;
+static TextLayer *s_textlayer_max;
 
 static void tap_handler(AccelAxisType axis, int32_t direction) {
   s_timer = 0;
@@ -32,7 +34,16 @@ static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
 static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
   s_timer = 0;
   timer_running = false;
-  layer_set_hidden(text_layer_get_layer(s_textlayer_rest), true);  
+  layer_set_hidden(text_layer_get_layer(s_textlayer_rest), true);
+  
+  if(s_max_timer < (int) ARRAY_LENGTH(max_timer_settings) - 1){
+    s_max_timer++;
+  } else {
+    s_max_timer = 0;
+  }
+  static char s_max_buffer[4];
+  snprintf(s_max_buffer, sizeof(s_max_buffer), "%d", max_timer_settings[s_max_timer]);
+  text_layer_set_text(s_textlayer_max, s_max_buffer);
 }
 
 static void click_config_provider(void *context) {
@@ -43,7 +54,6 @@ static void click_config_provider(void *context) {
 
 static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
-  GRect bounds = layer_get_bounds(window_layer);
 
   s_res_bitham_30_black = fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK);
   // text_layer
@@ -61,8 +71,20 @@ static void window_load(Window *window) {
   text_layer_set_text_alignment(s_textlayer_rest, GTextAlignmentCenter);
   text_layer_set_font(s_textlayer_rest, s_res_gothic_18_bold);
   
+  s_textlayer_max = text_layer_create(GRect(34, 120, 75, 24));
+  text_layer_set_background_color(s_textlayer_max, GColorWhite);
+  text_layer_set_text_color(s_textlayer_max, GColorBlack);
+  
+  static char s_max_buffer[4];
+  snprintf(s_max_buffer, sizeof(s_max_buffer), "%d", max_timer_settings[s_max_timer]);
+
+  text_layer_set_text(s_textlayer_max, s_max_buffer);
+  text_layer_set_text_alignment(s_textlayer_max, GTextAlignmentCenter);
+  text_layer_set_font(s_textlayer_max, s_res_gothic_18_bold);  
+  
   layer_add_child(window_layer, text_layer_get_layer(text_layer));
   layer_add_child(window_layer, text_layer_get_layer(s_textlayer_rest));
+  layer_add_child(window_layer, text_layer_get_layer(s_textlayer_max));
   layer_set_hidden(text_layer_get_layer(s_textlayer_rest), true);
 }
 
@@ -80,7 +102,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   text_layer_set_text(text_layer, s_timer_buffer);
 
   if(timer_running) {
-    if(s_timer == s_max_timer){
+    if(s_timer == max_timer_settings[s_max_timer]){
       timer_running = false;
       VibePattern pat = {
         .durations = vibe_segments,
