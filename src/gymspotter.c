@@ -3,13 +3,15 @@
 static Window *window;
 static TextLayer *text_layer;
 static int s_timer = 0;
-static int s_max_timer = 90;
+static int s_max_timer = 5;
 static bool timer_running = false;
 static GFont s_res_bitham_30_black;
+static const uint32_t const vibe_segments[] = { 1000, 300, 1000, 300, 1000 };
 
 static void tap_handler(AccelAxisType axis, int32_t direction) {
   s_timer = 0;
   timer_running = true;
+  vibes_long_pulse();
 }
 
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
@@ -34,15 +36,15 @@ static void click_config_provider(void *context) {
 static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
-  
+
   s_res_bitham_30_black = fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK);
   // text_layer
   text_layer = text_layer_create(GRect(20, 61, 100, 38));
   text_layer_set_text(text_layer, "00:00");
   text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
   text_layer_set_font(text_layer, s_res_bitham_30_black);
-    layer_add_child(window_layer, text_layer_get_layer(text_layer));
-  
+  layer_add_child(window_layer, text_layer_get_layer(text_layer));
+
 }
 
 static void window_unload(Window *window) {
@@ -61,8 +63,11 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   if(timer_running) {
     if(s_timer == s_max_timer){
       timer_running = false;
-      vibes_long_pulse();
-      vibes_long_pulse();
+      VibePattern pat = {
+        .durations = vibe_segments,
+        .num_segments = ARRAY_LENGTH(vibe_segments),
+      };
+      vibes_enqueue_custom_pattern(pat);
     } else {
       s_timer++;
     }
