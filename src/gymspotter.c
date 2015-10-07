@@ -55,6 +55,9 @@ static void click_config_provider(void *context) {
 static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
 
+  if(persist_exists(0)) {
+    s_max_timer = persist_read_int(0);
+  }
   s_res_bitham_30_black = fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK);
   // text_layer
   text_layer = text_layer_create(GRect(20, 61, 100, 38));
@@ -131,6 +134,7 @@ static void init(void) {
 }
 
 static void deinit(void) {
+  persist_write_int(0, s_max_timer);
   window_destroy(window);
 }
 
