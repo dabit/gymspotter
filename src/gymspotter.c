@@ -6,7 +6,7 @@ static int s_timer = 0;
 static int s_max_timer = 5;
 static bool timer_running = false;
 static GFont s_res_bitham_30_black;
-static const uint32_t const vibe_segments[] = { 1000, 300, 1000, 300, 1000 };
+static const uint32_t const vibe_segments[] = { 1000, 300, 1000};
 
 static void tap_handler(AccelAxisType axis, int32_t direction) {
   s_timer = 0;
@@ -20,11 +20,13 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
 }
 
 static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
-  text_layer_set_text(text_layer, "Up");
+  s_timer = 0;
+  timer_running = false;
 }
 
 static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-  text_layer_set_text(text_layer, "Down");
+  s_timer = 0;
+  timer_running = false;
 }
 
 static void click_config_provider(void *context) {
