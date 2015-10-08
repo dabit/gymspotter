@@ -1,9 +1,9 @@
 {
     "appKeys": {},
     "capabilities": [
-        "configurable"
+        ""
     ],
-    "companyName": "david@michelada.io",
+    "companyName": "David Padilla",
     "longName": "GymSpotter",
     "projectType": "native",
     "resources": {
