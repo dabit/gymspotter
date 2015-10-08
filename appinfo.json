@@ -7,7 +7,14 @@
     "longName": "GymSpotter",
     "projectType": "native",
     "resources": {
-        "media": []
+        "media": [
+            {
+                "file": "images/gymspotter28.png",
+                "menuIcon": true,
+                "name": "logo_28",
+                "type": "png"
+            }
+        ]
     },
     "sdkVersion": "3",
     "shortName": "GymSpotter",
