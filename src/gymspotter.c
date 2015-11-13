@@ -121,6 +121,7 @@ static void timer_is_done() {
   s_timer_running = false;
   long_vibration();
   set_rest_layer_visible(false);
+  light_enable_interaction();
 }
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
