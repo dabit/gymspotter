@@ -20,10 +20,11 @@
     "shortName": "GymSpotter",
     "targetPlatforms": [
         "aplite",
-        "basalt"
+        "basalt",
+        "chalk"
     ],
     "uuid": "7f271081-bf9e-4f3a-ab5f-ba9533434016",
-    "versionLabel": "1.2",
+    "versionLabel": "1.3",
     "watchapp": {
         "watchface": false
     }
