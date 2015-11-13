@@ -26,8 +26,10 @@ static void timer_stop() {
 }
 
 static void tap_handler(AccelAxisType axis, int32_t direction) {
-  timer_start();
-  vibes_long_pulse();
+  if(!s_timer_running) {
+    timer_start();
+    vibes_long_pulse();
+  }
 }
 
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
@@ -120,6 +122,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
         .num_segments = ARRAY_LENGTH(s_vibe_segments),
       };
       vibes_enqueue_custom_pattern(pat);
+
     } else {
       s_timer++;
     }
