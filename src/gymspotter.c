@@ -13,16 +13,20 @@ static const int const s_max_timer_settings[] = { 45, 60, 75, 90, 105, 120 };
 static GFont s_res_gothic_18_bold;
 static GFont s_res_bitham_30_black;
 
+static void set_rest_layer_visible(bool visibility) {
+  layer_set_hidden(text_layer_get_layer(s_textlayer_rest), visibility);
+}
+
 static void timer_start() {
   s_timer = 0;
   s_timer_running = true;
-  layer_set_hidden(text_layer_get_layer(s_textlayer_rest), false);
+  set_rest_layer_visible(false);
 }
 
 static void timer_stop() {
   s_timer = 0;
   s_timer_running = false;
-  layer_set_hidden(text_layer_get_layer(s_textlayer_rest), true);
+  set_rest_layer_visible(true);
 }
 
 static void tap_handler(AccelAxisType axis, int32_t direction) {
@@ -96,7 +100,7 @@ static void window_load(Window *window) {
   layer_add_child(window_layer, text_layer_get_layer(s_textlayer_timer));
   layer_add_child(window_layer, text_layer_get_layer(s_textlayer_rest));
   layer_add_child(window_layer, text_layer_get_layer(s_textlayer_max));
-  layer_set_hidden(text_layer_get_layer(s_textlayer_rest), true);
+  set_rest_layer_visible(true);
 }
 
 static void window_unload(Window *window) {
@@ -122,7 +126,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
         .num_segments = ARRAY_LENGTH(s_vibe_segments),
       };
       vibes_enqueue_custom_pattern(pat);
-
+      set_rest_layer_visible(false);
     } else {
       s_timer++;
     }
