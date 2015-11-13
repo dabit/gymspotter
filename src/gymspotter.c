@@ -109,6 +109,20 @@ static void window_unload(Window *window) {
   text_layer_destroy(s_textlayer_max);
 }
 
+static void long_vibration() {
+  VibePattern pat = {
+    .durations = s_vibe_segments,
+    .num_segments = ARRAY_LENGTH(s_vibe_segments),
+  };
+  vibes_enqueue_custom_pattern(pat);
+}
+
+static void timer_is_done() {
+  s_timer_running = false;
+  long_vibration();
+  set_rest_layer_visible(false);
+}
+
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   static char s_timer_buffer[6];
 
@@ -120,13 +134,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 
   if(s_timer_running) {
     if(s_timer == s_max_timer_settings[s_max_timer]){
-      s_timer_running = false;
-      VibePattern pat = {
-        .durations = s_vibe_segments,
-        .num_segments = ARRAY_LENGTH(s_vibe_segments),
-      };
-      vibes_enqueue_custom_pattern(pat);
-      set_rest_layer_visible(false);
+      timer_is_done();
     } else {
       s_timer++;
     }
