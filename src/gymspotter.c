@@ -14,19 +14,19 @@ static GFont s_res_gothic_18_bold;
 static GFont s_res_bitham_30_black;
 
 static void set_rest_layer_visible(bool visibility) {
-  layer_set_hidden(text_layer_get_layer(s_textlayer_rest), visibility);
+  layer_set_hidden(text_layer_get_layer(s_textlayer_rest), !visibility);
 }
 
 static void timer_start() {
   s_timer = 0;
   s_timer_running = true;
-  set_rest_layer_visible(false);
+  set_rest_layer_visible(true);
 }
 
 static void timer_stop() {
   s_timer = 0;
   s_timer_running = false;
-  set_rest_layer_visible(true);
+  set_rest_layer_visible(false);
 }
 
 static void tap_handler(AccelAxisType axis, int32_t direction) {
@@ -120,8 +120,8 @@ static void long_vibration() {
 static void timer_is_done() {
   s_timer_running = false;
   long_vibration();
-  set_rest_layer_visible(false);
   light_enable_interaction();
+  set_rest_layer_visible(false);
 }
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
