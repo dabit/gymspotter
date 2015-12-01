@@ -32,7 +32,6 @@ static int s_max_timer = 0;
 static bool s_timer_running = false;
 static const uint32_t const s_vibe_segments[] = { 1000, 300, 1000 };
 static const int const s_max_timer_settings[] = { 45, 60, 75, 90, 105, 120 };
-static GFont s_res_gothic_18_bold;
 
 static void set_rest_layer_visible(bool visibility) {
   layer_set_hidden(text_layer_get_layer(s_textlayer_rest), !visibility);
@@ -120,6 +119,9 @@ static void window_load(Window *window) {
   layer_add_child(window_layer, text_layer_get_layer(s_textlayer_timer));
   layer_add_child(window_layer, text_layer_get_layer(s_textlayer_rest));
   layer_add_child(window_layer, text_layer_get_layer(s_textlayer_max));
+  
+  // Enable for screenshots
+  light_enable(false);
 }
 
 static void window_unload(Window *window) {
