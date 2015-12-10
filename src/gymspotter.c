@@ -1,5 +1,7 @@
 #include <pebble.h>
 
+#define GRACE_PERIOD 5
+
 #if defined(PBL_RECT)
   #define DEVICE_WIDTH 144
   #define DEVICE_HEIGHT 168
@@ -29,6 +31,7 @@ static TextLayer *s_textlayer_max;
 
 static int s_timer = 0;
 static int s_max_timer = 0;
+static int s_grace_timer = 0;
 static bool s_timer_running = false;
 static const uint32_t const s_vibe_segments[] = { 1000, 300, 1000 };
 static const int const s_max_timer_settings[] = { 45, 60, 75, 90, 105, 120 };
@@ -50,7 +53,7 @@ static void timer_stop() {
 }
 
 static void tap_handler(AccelAxisType axis, int32_t direction) {
-  if(!s_timer_running) {
+  if(!s_timer_running && s_grace_timer == 0) {
     timer_start();
     vibes_long_pulse();
   }
@@ -139,6 +142,7 @@ static void long_vibration() {
 }
 
 static void timer_is_done() {
+  s_grace_timer = GRACE_PERIOD;
   s_timer_running = false;
   long_vibration();
   light_enable_interaction();
@@ -150,6 +154,10 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 
   int seconds = s_timer % 60;
   int minutes = (s_timer % 3600) / 60;
+  
+  if(s_grace_timer > 0) {
+    s_grace_timer--;
+  }
 
   snprintf(s_timer_buffer, sizeof(s_timer_buffer), "%02d:%02d", minutes, seconds);
   text_layer_set_text(s_textlayer_timer, s_timer_buffer);
