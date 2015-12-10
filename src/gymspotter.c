@@ -107,7 +107,7 @@ static void window_load(Window *window) {
   text_layer_set_text_alignment(s_textlayer_rest, GTextAlignmentCenter);
   text_layer_set_font(s_textlayer_rest, REST_FONT);
   set_rest_layer_visible(false);
-  
+
   s_textlayer_max = text_layer_create(GRect(0, MAX_LAYER_POSITION, DEVICE_WIDTH, 48));
   text_layer_set_background_color(s_textlayer_max, GColorWhite);
   text_layer_set_text_color(s_textlayer_max, GColorBlack);
@@ -122,7 +122,7 @@ static void window_load(Window *window) {
   layer_add_child(window_layer, text_layer_get_layer(s_textlayer_timer));
   layer_add_child(window_layer, text_layer_get_layer(s_textlayer_rest));
   layer_add_child(window_layer, text_layer_get_layer(s_textlayer_max));
-  
+
   // Enable for screenshots
   light_enable(false);
 }
@@ -154,7 +154,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 
   int seconds = s_timer % 60;
   int minutes = (s_timer % 3600) / 60;
-  
+
   if(s_grace_timer > 0) {
     s_grace_timer--;
   }
