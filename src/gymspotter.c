@@ -12,22 +12,29 @@
   #define REST_HEIGHT 24
   #define REST_BACKGROUND_COLOR GColorBlack
   #define MAX_FONT fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD)
+  #define SHOW_TIME false
+  #define TOD_FONT fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD)
+  #define TOD_HEIGHT 20
 #elif defined(PBL_ROUND)
   #define DEVICE_WIDTH 180
   #define DEVICE_HEIGHT 180
   #define MAX_LAYER_POSITION 120
-  #define TIMER_FONT fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD)
-  #define TIMER_HEIGHT 44
+  #define TIMER_FONT fonts_get_system_font(FONT_KEY_ROBOTO_BOLD_SUBSET_49)
+  #define TIMER_HEIGHT 50
   #define REST_FONT fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD)
   #define REST_HEIGHT 32
   #define REST_BACKGROUND_COLOR GColorRed
   #define MAX_FONT fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD)
+  #define SHOW_TIME true
+  #define TOD_FONT fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD)
+  #define TOD_HEIGHT 20
 #endif
 
 static Window *window;
 static TextLayer *s_textlayer_timer;
 static TextLayer *s_textlayer_rest;
 static TextLayer *s_textlayer_max;
+static TextLayer *s_textlayer_tod;
 
 static int s_timer = 0;
 static int s_max_timer = 0;
@@ -88,26 +95,40 @@ static void click_config_provider(void *context) {
   window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
 }
 
-static void window_load(Window *window) {
-  Layer *window_layer = window_get_root_layer(window);
+static void update_time_of_day() {
+  static char s_tod_buffer[6];
+  clock_copy_time_string(s_tod_buffer, sizeof(s_tod_buffer));
+  text_layer_set_text(s_textlayer_tod, s_tod_buffer);
+}
 
-  if(persist_exists(0)) {
-    s_max_timer = persist_read_int(0);
-  }
+static void init_time_of_day(Layer *window_layer) {
+  s_textlayer_tod = text_layer_create(GRect(0, 50, DEVICE_WIDTH - 30, TOD_HEIGHT));
+  text_layer_set_text_alignment(s_textlayer_tod, GTextAlignmentRight);
+  text_layer_set_font(s_textlayer_tod, TOD_FONT);
+  layer_add_child(window_layer, text_layer_get_layer(s_textlayer_tod));
+  update_time_of_day();
+}
 
-  s_textlayer_timer = text_layer_create(GRect(0, (DEVICE_HEIGHT/2 - TIMER_HEIGHT/2), DEVICE_WIDTH, TIMER_HEIGHT));
-  text_layer_set_text(s_textlayer_timer, "00:00");
-  text_layer_set_text_alignment(s_textlayer_timer, GTextAlignmentCenter);
-  text_layer_set_font(s_textlayer_timer, TIMER_FONT);
-
-  s_textlayer_rest = text_layer_create(GRect(0, 20, DEVICE_WIDTH, REST_HEIGHT));
+static void init_rest_label(Layer *window_layer) {
+  s_textlayer_rest = text_layer_create(GRect(0, 15, DEVICE_WIDTH, REST_HEIGHT));
   text_layer_set_background_color(s_textlayer_rest, REST_BACKGROUND_COLOR);
   text_layer_set_text_color(s_textlayer_rest, GColorWhite);
   text_layer_set_text(s_textlayer_rest, "REST");
   text_layer_set_text_alignment(s_textlayer_rest, GTextAlignmentCenter);
   text_layer_set_font(s_textlayer_rest, REST_FONT);
-  set_rest_layer_visible(false);
+  set_rest_layer_visible(false);  
+  layer_add_child(window_layer, text_layer_get_layer(s_textlayer_rest));
+}
 
+static void init_timer_label(Layer *window_layer) {
+  s_textlayer_timer = text_layer_create(GRect(0, (DEVICE_HEIGHT/2 - TIMER_HEIGHT/2), DEVICE_WIDTH, TIMER_HEIGHT));
+  text_layer_set_text(s_textlayer_timer, "00:00");
+  text_layer_set_text_alignment(s_textlayer_timer, GTextAlignmentCenter);
+  text_layer_set_font(s_textlayer_timer, TIMER_FONT);
+  layer_add_child(window_layer, text_layer_get_layer(s_textlayer_timer));
+}
+
+static void init_max_label(Layer *window_layer) {
   s_textlayer_max = text_layer_create(GRect(0, MAX_LAYER_POSITION, DEVICE_WIDTH, 48));
   text_layer_set_background_color(s_textlayer_max, GColorWhite);
   text_layer_set_text_color(s_textlayer_max, GColorBlack);
@@ -118,10 +139,21 @@ static void window_load(Window *window) {
   text_layer_set_text(s_textlayer_max, s_max_buffer);
   text_layer_set_text_alignment(s_textlayer_max, GTextAlignmentCenter);
   text_layer_set_font(s_textlayer_max, MAX_FONT);
-
-  layer_add_child(window_layer, text_layer_get_layer(s_textlayer_timer));
-  layer_add_child(window_layer, text_layer_get_layer(s_textlayer_rest));
+  
   layer_add_child(window_layer, text_layer_get_layer(s_textlayer_max));
+}
+
+static void window_load(Window *window) {
+  Layer *window_layer = window_get_root_layer(window);
+
+  if(persist_exists(0)) {
+    s_max_timer = persist_read_int(0);
+  }
+  
+  init_timer_label(window_layer);
+  init_rest_label(window_layer);
+  init_max_label(window_layer);
+  init_time_of_day(window_layer);
 
   // Enable for screenshots
   light_enable(false);
@@ -131,6 +163,7 @@ static void window_unload(Window *window) {
   text_layer_destroy(s_textlayer_timer);
   text_layer_destroy(s_textlayer_rest);
   text_layer_destroy(s_textlayer_max);
+  text_layer_destroy(s_textlayer_tod);
 }
 
 static void long_vibration() {
@@ -149,18 +182,22 @@ static void timer_is_done() {
   set_rest_layer_visible(false);
 }
 
-static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
+static void update_timer() {
   static char s_timer_buffer[6];
-
   int seconds = s_timer % 60;
   int minutes = (s_timer % 3600) / 60;
+  
+  snprintf(s_timer_buffer, sizeof(s_timer_buffer), "%02d:%02d", minutes, seconds);
+  text_layer_set_text(s_textlayer_timer, s_timer_buffer);
+}
+
+static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
+  update_time_of_day();
+  update_timer();
 
   if(s_grace_timer > 0) {
     s_grace_timer--;
   }
-
-  snprintf(s_timer_buffer, sizeof(s_timer_buffer), "%02d:%02d", minutes, seconds);
-  text_layer_set_text(s_textlayer_timer, s_timer_buffer);
 
   if(s_timer_running) {
     if(s_timer == s_max_timer_settings[s_max_timer]){
