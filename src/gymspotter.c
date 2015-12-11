@@ -12,7 +12,6 @@
   #define REST_HEIGHT 24
   #define REST_BACKGROUND_COLOR GColorBlack
   #define MAX_FONT fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD)
-  #define SHOW_TIME false
   #define TOD_FONT fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD)
   #define TOD_HEIGHT 20
   #define TOD_POSITION 45
@@ -26,7 +25,6 @@
   #define REST_HEIGHT 32
   #define REST_BACKGROUND_COLOR GColorRed
   #define MAX_FONT fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD)
-  #define SHOW_TIME true
   #define TOD_FONT fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD)
   #define TOD_HEIGHT 20
   #define TOD_POSITION 50
@@ -118,7 +116,7 @@ static void init_rest_label(Layer *window_layer) {
   text_layer_set_text(s_textlayer_rest, "REST");
   text_layer_set_text_alignment(s_textlayer_rest, GTextAlignmentCenter);
   text_layer_set_font(s_textlayer_rest, REST_FONT);
-  set_rest_layer_visible(false);  
+  set_rest_layer_visible(false);
   layer_add_child(window_layer, text_layer_get_layer(s_textlayer_rest));
 }
 
@@ -141,7 +139,7 @@ static void init_max_label(Layer *window_layer) {
   text_layer_set_text(s_textlayer_max, s_max_buffer);
   text_layer_set_text_alignment(s_textlayer_max, GTextAlignmentCenter);
   text_layer_set_font(s_textlayer_max, MAX_FONT);
-  
+
   layer_add_child(window_layer, text_layer_get_layer(s_textlayer_max));
 }
 
@@ -151,7 +149,7 @@ static void window_load(Window *window) {
   if(persist_exists(0)) {
     s_max_timer = persist_read_int(0);
   }
-  
+
   init_timer_label(window_layer);
   init_rest_label(window_layer);
   init_max_label(window_layer);
@@ -188,7 +186,7 @@ static void update_timer() {
   static char s_timer_buffer[6];
   int seconds = s_timer % 60;
   int minutes = (s_timer % 3600) / 60;
-  
+
   snprintf(s_timer_buffer, sizeof(s_timer_buffer), "%02d:%02d", minutes, seconds);
   text_layer_set_text(s_textlayer_timer, s_timer_buffer);
 }
