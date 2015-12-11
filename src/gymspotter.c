@@ -15,6 +15,7 @@
   #define SHOW_TIME false
   #define TOD_FONT fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD)
   #define TOD_HEIGHT 20
+  #define TOD_POSITION 45
 #elif defined(PBL_ROUND)
   #define DEVICE_WIDTH 180
   #define DEVICE_HEIGHT 180
@@ -28,6 +29,7 @@
   #define SHOW_TIME true
   #define TOD_FONT fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD)
   #define TOD_HEIGHT 20
+  #define TOD_POSITION 50
 #endif
 
 static Window *window;
@@ -102,7 +104,7 @@ static void update_time_of_day() {
 }
 
 static void init_time_of_day(Layer *window_layer) {
-  s_textlayer_tod = text_layer_create(GRect(0, 50, DEVICE_WIDTH - 30, TOD_HEIGHT));
+  s_textlayer_tod = text_layer_create(GRect(0, TOD_POSITION, DEVICE_WIDTH - 30, TOD_HEIGHT));
   text_layer_set_text_alignment(s_textlayer_tod, GTextAlignmentRight);
   text_layer_set_font(s_textlayer_tod, TOD_FONT);
   layer_add_child(window_layer, text_layer_get_layer(s_textlayer_tod));
