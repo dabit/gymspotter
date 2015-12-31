@@ -9,10 +9,15 @@
     "resources": {
         "media": [
             {
-                "file": "images/gymspotter28.png",
+                "file": "images/logo28.png",
                 "menuIcon": true,
-                "name": "logo_28",
-                "type": "png"
+                "name": "logo",
+                "targetPlatforms": [
+                    "aplite",
+                    "basalt",
+                    "chalk"
+                ],
+                "type": "bitmap"
             }
         ]
     },
