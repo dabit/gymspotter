@@ -70,23 +70,43 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
   timer_start();
 }
 
-static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
-  timer_stop();
-}
+static void cycle_timer(int direction) {
+  s_max_timer = s_max_timer + direction;
 
-static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-  s_timer = 0;
-  s_timer_running = false;
-  layer_set_hidden(text_layer_get_layer(s_textlayer_rest), true);
-
-  if(s_max_timer < (int) ARRAY_LENGTH(s_max_timer_settings) - 1){
-    s_max_timer++;
-  } else {
+  if(s_max_timer > (int) ARRAY_LENGTH(s_max_timer_settings) - 1){
     s_max_timer = 0;
   }
+
+  if(s_max_timer < 0) {
+    s_max_timer = ARRAY_LENGTH(s_max_timer_settings) - 1;
+  }
+
   static char s_max_buffer[20];
   snprintf(s_max_buffer, sizeof(s_max_buffer), "Stop at:\n%02ds", s_max_timer_settings[s_max_timer]);
   text_layer_set_text(s_textlayer_max, s_max_buffer);
+}
+static void cycle_timer_up() {
+  cycle_timer(1);
+}
+
+static void cycle_timer_down() {
+  cycle_timer(-1);
+}
+
+static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
+  if(s_timer_running) {
+    timer_stop();
+  } else {
+    cycle_timer_up();
+  }
+}
+
+static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
+  if(s_timer_running) {
+    timer_stop();
+  } else {
+    cycle_timer_down();
+  }
 }
 
 static void click_config_provider(void *context) {
