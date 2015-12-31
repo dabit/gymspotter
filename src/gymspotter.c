@@ -15,7 +15,6 @@
   #define TOD_FONT fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD)
   #define TOD_HEIGHT 20
   #define TOD_POSITION 45
-  #define WINDOW_BG_COLOR GColorWhite
 #elif defined(PBL_ROUND)
   #define DEVICE_WIDTH 180
   #define DEVICE_HEIGHT 180
@@ -29,7 +28,6 @@
   #define TOD_FONT fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD)
   #define TOD_HEIGHT 20
   #define TOD_POSITION 50
-  #define WINDOW_BG_COLOR GColorCyan
 #endif
 
 static Window *window;
@@ -105,7 +103,6 @@ static void update_time_of_day() {
 
 static void init_time_of_day(Layer *window_layer) {
   s_textlayer_tod = text_layer_create(GRect(0, TOD_POSITION, DEVICE_WIDTH - 30, TOD_HEIGHT));
-  text_layer_set_background_color(s_textlayer_tod, GColorClear);
   text_layer_set_text_alignment(s_textlayer_tod, GTextAlignmentRight);
   text_layer_set_font(s_textlayer_tod, TOD_FONT);
   layer_add_child(window_layer, text_layer_get_layer(s_textlayer_tod));
@@ -125,7 +122,6 @@ static void init_rest_label(Layer *window_layer) {
 
 static void init_timer_label(Layer *window_layer) {
   s_textlayer_timer = text_layer_create(GRect(0, (DEVICE_HEIGHT/2 - TIMER_HEIGHT/2), DEVICE_WIDTH, TIMER_HEIGHT));
-  text_layer_set_background_color(s_textlayer_timer, GColorClear);
   text_layer_set_text(s_textlayer_timer, "00:00");
   text_layer_set_text_alignment(s_textlayer_timer, GTextAlignmentCenter);
   text_layer_set_font(s_textlayer_timer, TIMER_FONT);
@@ -134,7 +130,7 @@ static void init_timer_label(Layer *window_layer) {
 
 static void init_max_label(Layer *window_layer) {
   s_textlayer_max = text_layer_create(GRect(0, MAX_LAYER_POSITION, DEVICE_WIDTH, 48));
-  text_layer_set_background_color(s_textlayer_max, GColorClear);
+  text_layer_set_background_color(s_textlayer_max, GColorWhite);
   text_layer_set_text_color(s_textlayer_max, GColorBlack);
 
   static char s_max_buffer[16];
@@ -158,7 +154,6 @@ static void window_load(Window *window) {
   init_rest_label(window_layer);
   init_max_label(window_layer);
   init_time_of_day(window_layer);
-  window_set_background_color(window, WINDOW_BG_COLOR);
 
   // Enable for screenshots
   light_enable(false);
